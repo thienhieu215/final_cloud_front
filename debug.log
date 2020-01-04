@@ -1,0 +1,18 @@
+[1203/162350.621:ERROR:process_info.cc(359)] UncheckedAllocate
+[1203/162350.621:ERROR:process_info.cc(359)] UncheckedAllocate
+[1203/162350.644:ERROR:process_info.cc(359)] UncheckedAllocate
+[1203/223701.303:ERROR:process_info.cc(359)] UncheckedAllocate
+[1203/223716.409:ERROR:process_info.cc(359)] UncheckedAllocate
+[1203/234040.395:ERROR:process_info.cc(359)] UncheckedAllocate
+[1204/002143.217:ERROR:process_info.cc(359)] UncheckedAllocate
+[1205/141110.953:ERROR:process_info.cc(359)] UncheckedAllocate
+[1206/015231.218:ERROR:process_info.cc(359)] UncheckedAllocate
+[1206/015231.223:ERROR:process_info.cc(359)] UncheckedAllocate
+[1206/015625.242:ERROR:process_info.cc(359)] UncheckedAllocate
+[1206/015625.294:ERROR:process_info.cc(359)] UncheckedAllocate
+[1206/022729.370:ERROR:process_info.cc(359)] UncheckedAllocate
+[1206/023037.863:ERROR:process_info.cc(359)] UncheckedAllocate
+[1206/061217.752:ERROR:process_info.cc(359)] UncheckedAllocate
+[1206/061222.857:ERROR:process_info.cc(359)] UncheckedAllocate
+[1206/061225.279:ERROR:process_info.cc(359)] UncheckedAllocate
+[1230/164507.829:ERROR:filesystem_win.cc(148)] DeleteFile C:\Users\tieuk\AppData\Local\Google\Chrome\User Data\Crashpad\reports\bcb68b82-1a63-4432-8135-074ca399b63b.dmp: The process cannot access the file because it is being used by another process. (0x20)
