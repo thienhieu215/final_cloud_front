@@ -88,7 +88,7 @@ class EventDetailPageAdmin extends React.Component {
                 this.props.fetchVolunteerBySite(eventID)
                 axios({
                     method: 'GET',
-                    url: `http://localhost:8081/cleansite/${eventID}`,
+                    url: `http://localhost:3000/cleansite/${eventID}`,
                     data: null
                 }).then(res => {
                     console.log(res.data, "data")

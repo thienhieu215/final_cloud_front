@@ -16,6 +16,7 @@ export const LOG_IN = 'LOG_IN';
 export const REGISTER = 'REGISTER';
 export const INVALID = 'INVALID';
 
+
 export const DOWNLOAD_EVENTS_BY_ACCOUNT = 'DOWNLOAD_EVENTS_BY_ACCOUNT';
 
 export const FETCH_ACCOUNTS_BY_ID = 'FETCH_ACCOUNTS_BY_ID';

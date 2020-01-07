@@ -8,6 +8,7 @@ import {
     actionDeleteEventsRequest,
     actionFetchEventsByIDRequest,
     actionFetchVolunteersByEmailRequest,
+    actionSendEmailVolunteersBySiteRequest,
     actionAddSiteVolunteerRequest,
     actionAddVolunteersRequest,
     actionFetchVolunteersRequest,
@@ -78,6 +79,7 @@ class EventDetailPageOwner extends React.Component {
         this.closeModal = this.closeModal.bind(this)
         this.toggleOpenForm = this.toggleOpenForm.bind(this)
         this.download = this.download.bind(this)
+        this.sendEmail = this.sendEmail.bind(this)
         this.handleeventNumParticipantsChange = this.handleeventNumParticipantsChange.bind(this)
         this.handleeventTrashWeightChange = this.handleeventTrashWeightChange.bind(this)
         this.showResultForm = this.showResultForm.bind(this)
@@ -145,7 +147,7 @@ class EventDetailPageOwner extends React.Component {
                 this.props.fetchVolunteerBySite(eventID)
                 axios({
                     method: 'GET',
-                    url: `http://localhost:8081/cleansite/${eventID}`,
+                    url: `http://localhost:3000/cleansite/${eventID}`,
                     data: null
                 }).then(res => {
                     var data = res.data[0]
@@ -212,6 +214,10 @@ class EventDetailPageOwner extends React.Component {
 
     download() {
         this.props.actionDownloadVolunteersBySite(this.state.eventId, this.state.eventName)
+    }
+
+    sendEmail() {
+        this.props.sendEmailVolunteersBySite(this.state.eventId)
     }
 
     deleteBooking(name) {
@@ -439,6 +445,7 @@ class EventDetailPageOwner extends React.Component {
                                 )}
                                 <br />
                                 <a href={`/#/event-detail-owner/${this.state.eventId}`} onClick={this.download}>Download list of volunteers</a>
+                                <a href={`/#/event-detail-owner/${this.state.eventId}`} onClick={this.sendEmail.bind(this)}>Send email to volunteers</a>
                             </div>
 
                             <br /><br />
@@ -613,6 +620,7 @@ const mapDispatchToProps = (dispatch) => {
         actionAddVolunteers: (obj) => { dispatch(actionAddVolunteersRequest(obj)) },
         actionFetchVolunteers: () => { dispatch(actionFetchVolunteersRequest()) },
         actionDownloadVolunteersBySite: (siteid, sitename) => { dispatch(actionDownloadVolunteersBySiteRequest(siteid, sitename)) },
+        sendEmailVolunteersBySite: (siteID) => { dispatch(actionSendEmailVolunteersBySiteRequest(siteID))},
         actionDeleteEvents: (name) => { dispatch(actionDeleteEventsRequest(name)) },
         actionEditEvents: (obj, id) => { dispatch(actionEditEventsRequest(obj, id)) }
     }

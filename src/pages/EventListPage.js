@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
+import axios from 'axios';
 import { actionFetchEventsRequest, 
   actionDeleteEventsRequest, 
   actionFetchEventsByIDRequest,
   actionFetchEventsByOwnerRequest,
+  actionFetchAccountsByIDRequest,
   actionDownloadEventsByAccountRequest } from '../action/actions'
 import { Link } from 'react-router-dom';
 import {Modal,ModalHeader,ModalBody} from 'reactstrap'
 import jwtDecode from 'jwt-decode'
+import Cryptr from 'cryptr'
+const cryptr = new Cryptr('myTotalySecretKey');
+
+
+
 
 
 class EventListPage extends Component {
@@ -37,7 +44,11 @@ class EventListPage extends Component {
   }
 
   componentDidMount() {
+
     const userToken = localStorage.getItem("usertoken")
+    const socialType = localStorage.getItem("socialtype")
+
+
     if (typeof userToken !== "undefined" && userToken !== null) {
       var decoded = jwtDecode(userToken);
       const id = decoded.acc_id;
@@ -51,9 +62,58 @@ class EventListPage extends Component {
         this.props.fetchEventsByOwner(id)
         this.setState({ displayItems: this.props.events.events })
       }
-    } else {
-      window.location.href="/#/sign-in"
-    }  
+    }
+    else if (socialType == "facebook"){
+        axios({
+            method: 'GET',
+            url: `http://localhost:3000/sociallogin/fblogin`,
+            data: null
+        })
+            .then(res => {
+                if (res.data != "Not authenticated") {
+                    var decoded = jwtDecode(res.data);
+                    console.log("YOU CAN DO THISS")
+                    console.log(decoded)
+                    const id = decoded.user_id;
+                    const name = decoded.user_name;
+                    // const desc = decoded.acc_description;
+                    // const photo = decoded.acc_profile_pic
+                    this.setState({idNow: id, nameNow: name})
+                    this.props.fetchEventsByOwner(id)
+                    this.setState({ displayItems: this.props.events.events })
+                }
+                else {  window.location.href="/#/sign-in"}
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+    else if (socialType == "gmail"){
+            axios({
+                method: 'GET',
+                url: `http://localhost:3000/sociallogin/gmaillogin`,
+                data: null
+            })
+                .then(res => {
+                    if (res.data['authorization'] == "true") {
+                        var decoded = jwtDecode(res.data.token);
+                        console.log("YOU CAN DO THISS AGAIN")
+                        console.log(decoded)
+                        const id = decoded.user_id;
+                        const name = decoded.user_name;
+                        // const desc = decoded.acc_description;
+                        // const photo = decoded.acc_profile_pic
+                        this.setState({idNow: id, nameNow: name})
+                        this.props.fetchEventsByOwner(id)
+                        this.setState({ displayItems: this.props.events.events })
+                    }
+                    else {  window.location.href="/#/sign-in"}
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+
+    }
   }
   componentWillReceiveProps(props) {
     this.setState({ displayItems: props.events.events })
@@ -339,6 +399,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     fetchEventsById: (id) => { dispatch(actionFetchEventsByIDRequest(id)) },
     fetchEventsByOwner: (ownerid) => { dispatch(actionFetchEventsByOwnerRequest(ownerid)) },
+    fetchAccountBySite: (ownerID) => { dispatch(actionFetchAccountsByIDRequest(ownerID)) },
     actionDeleteEvents: (name) => { dispatch(actionDeleteEventsRequest(name)) },
     actionFetchEvents: () => { dispatch(actionFetchEventsRequest()) },
     actionDownloadEventsByAccount: (ownerid, ownername) => { dispatch(actionDownloadEventsByAccountRequest(ownerid, ownername)) },

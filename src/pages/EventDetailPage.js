@@ -121,7 +121,7 @@ class EventDetailPage extends React.Component {
                 var data = res.data[0]
                 axios({
                     method: 'GET',
-                    url: `http://localhost:8081/photo/owner/${data.cs_owner}/photo`,
+                    url: `http://localhost:3000/photo/owner/${data.cs_owner}/photo`,
                     data: null
                 }).then(res => {
                     this.setState({
@@ -133,7 +133,7 @@ class EventDetailPage extends React.Component {
 
                 axios({
                     method: 'GET',
-                    url: `http://localhost:8081/photo/site/${eventID}/photo`,
+                    url: `http://localhost:3000/photo/site/${eventID}/photo`,
                     data: null
                 }).then(res => {
                     this.setState({

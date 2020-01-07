@@ -24,7 +24,7 @@ class Routes extends Component {
         <Route path="/sign-in" component={signIn} />
         <Route path="/sign-up" component={signUp} />
         <Route path="/about-us" component={aboutUs} />
-        <Route path="/event-list" component={eventListPage} />
+        <Route path="/event-list/" component={eventListPage} />
         <Route path="/edit-event/:eventID" component={editLocationPage} />
       </Switch>
     );

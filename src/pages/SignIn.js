@@ -11,7 +11,9 @@ import Container from '@material-ui/core/Container';
 import './../css/style.css'
 import withStyles from "@material-ui/core/styles/withStyles";
 import { connect } from 'react-redux'
-import { login, fblogin } from '../action/UserFunctions'
+import { login, fb_login } from '../action/UserFunctions'
+import axios from "axios";
+import jwtDecode from "jwt-decode";
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 
@@ -40,6 +42,10 @@ class SignIn extends Component {
     this.handleEmailChange = this.handleEmailChange.bind(this)
     this.handlePasswordChange = this.handlePasswordChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
+    this.handleFBClick = this.handleFBClick.bind(this);
+    this.handleGmailClick = this.handleGmailClick.bind(this);
+
+
   }
 
   onChange(e) {
@@ -92,9 +98,29 @@ class SignIn extends Component {
     });
   }
 
+  handleFBClick() {
+    localStorage.setItem('socialtype', "facebook")
+  }
 
-  render() {
+  handleGmailClick() {
+    localStorage.setItem('socialtype', "gmail")
+  }
+
+
+  componentDidMount() {
+    axios({
+      method: 'GET',
+      url: `http://localhost:3000/sociallogin/logout`,
+      data: null
+    })
+        .catch(err => {
+          console.log(err)
+        })
+  }
+
+  render(){
     const classes = this.props;
+    localStorage.clear()
     return (
       <Container component="main" maxWidth="xs" className=" Min-height">
         <br /><br /><br /><br /><br />
@@ -154,7 +180,11 @@ class SignIn extends Component {
               </Link>
               </Grid>
             </Grid>
+
           </form>
+          <a href={"/sociallogin/auth/facebook"} onClick={this.handleFBClick.bind(this)} className="btn btn-primary"><span className="fa fa-facebook"></span>Facebook</a>
+          <a href={"/sociallogin/auth/google"} onClick={this.handleGmailClick.bind(this)} className="btn btn-primary"><span className="fa fa-facebook"></span>Gmail</a>
+
         </div>
         <Box mt={8}>
         </Box>

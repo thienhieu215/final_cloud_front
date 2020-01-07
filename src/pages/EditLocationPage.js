@@ -250,7 +250,7 @@ class EditLocationPage extends Component {
                 console.log(eventID)
                 axios({
                     method: 'GET',
-                    url: `http://localhost:8081/cleansite/${eventID}`,
+                    url: `http://localhost:3000/cleansite/${eventID}`,
                     data: null
                 }).then(res => {
                     console.log(res.data, "data")
