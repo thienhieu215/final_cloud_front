@@ -10,7 +10,8 @@ import {
     actionAddVolunteersRequest,
     actionFetchVolunteersRequest,
     actionFetchVolunteersBySiteRequest,
-    actionDownloadVolunteersBySiteRequest
+    actionDownloadVolunteersBySiteRequest,
+    actionFetchAccountsByIDRequest
 } from '../action/actions'
 import { Modal, ModalHeader, ModalBody } from 'reactstrap'
 import { Link } from 'react-router-dom';
@@ -31,10 +32,17 @@ class EventDetailPage extends React.Component {
             eventLat: '',
             eventLng: '',
             eventDomain: '',
-            eventDataCollected: '',
+            eventNumParticipants: '',
+            eventParticipants: [],
+            eventTrashWeight: '',
+            eventRecyclableTrash: '',
+            eventNonRecyclableTrash: '',
+            eventOrganicTrash: '',
             eventOwner: '',
             ownerPhoto: '',
             eventPhoto: '',
+            eventOwnerName: '',
+            eventOwnerDesc: '',
 
             vltEmail: '',
             vltName: '',
@@ -115,13 +123,14 @@ class EventDetailPage extends React.Component {
             this.props.fetchVolunteerBySite(eventID)
             axios({
                 method: 'GET',
-                url: `http://localhost:8081/cleansite/${eventID}`,
+                url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/${eventID}`,
                 data: null
             }).then(res => {
                 var data = res.data[0]
+                this.props.fetchAccountByID(data.cs_owner)
                 axios({
                     method: 'GET',
-                    url: `http://localhost:3000/photo/owner/${data.cs_owner}/photo`,
+                    url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/photo/owner/${data.cs_owner}/photo`,
                     data: null
                 }).then(res => {
                     this.setState({
@@ -133,7 +142,7 @@ class EventDetailPage extends React.Component {
 
                 axios({
                     method: 'GET',
-                    url: `http://localhost:3000/photo/site/${eventID}/photo`,
+                    url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/photo/site/${eventID}/photo`,
                     data: null
                 }).then(res => {
                     this.setState({
@@ -152,9 +161,15 @@ class EventDetailPage extends React.Component {
                     eventEndDateTime: data.cs_end_time,
                     eventLat: data.cs_lat,
                     eventLng: data.cs_long,
-                    eventDataCollected: data.cs_amount_collected,
                     eventOwner: data.cs_owner,
-                    eventDomain: data.cs_inex
+                    eventOwnerName: data.cs_owner_name,
+                    eventOwnerDesc: data.cs_owner_description,
+                    eventDomain: data.cs_inex,
+                    eventNumParticipants: data.cs_ptcp_no,
+                    eventTrashWeight: data.cs_amount_collected,
+                    eventRecyclableTrash: data.cs_recy,
+                    eventNonRecyclableTrash: data.cs_non_recy,
+                    eventOrganicTrash: data.cs_organic,
                 })
             }).catch(err => {
                 console.log(err)
@@ -293,7 +308,7 @@ class EventDetailPage extends React.Component {
 
                         <div className="col-7" >
                             <h1 className="">{this.state.eventName}</h1>
-                            <br />
+                            <br/>
                             <div style={{ fontSize: "18px" }}>{this.state.eventAddress}</div>
                             <a target="_blank" href={`https://www.google.com/maps/search/?api=1&query=${this.state.eventLat},${this.state.eventLng}`}>See location on Google Maps</a>
                             <br /><br />
@@ -309,25 +324,31 @@ class EventDetailPage extends React.Component {
                             <div style={{ fontSize: "18px", fontWeight: "500" }}>Agenda: </div>
                             <div className="AppSmall">{this.state.eventDescription}</div> <br />
 
-                            {this.state.eventDataCollected !== "unknown" &&
+                            {this.state.eventNumParticipants !== '0' && this.state.eventTrashWeight !== '0' &&
                                 <div>
-                                    <div style={{ fontSize: "18px", fontWeight: "500" }}>Report: </div>
-                                    <div className="AppSmall">{this.state.eventDataCollected}</div> <br />
+                                <div style={{ fontSize: "18px", fontWeight: "500" }}>Report: </div>
+                                <div className="AppSmall">Number of Participants: {this.state.eventNumParticipants}</div> 
+                                <div className="AppSmall">Weight of trash has been collected: {this.state.eventTrashWeight}</div>
+                                <div className="AppSmall">Recyclable: {this.state.eventRecyclableTrash}</div>
+                                <div className="AppSmall">Non-Recyclable: {this.state.eventNonRecyclableTrash}</div>
+                                <div className="AppSmall">Organic: {this.state.eventOrganicTrash}</div>
+                                <br/>
                                 </div>
-
                             }
+
 
                             {this.state.ownerPhoto.length !== 0 &&
                                 <div>
                                     <label style={{ fontSize: "18px", fontWeight: "500" }}>Photo of organizer or clean-up activities before</label>
                                     <br />
                                     {this.state.ownerPhoto.map((url, index) =>
-                                        <div style={{ display: "inline-block" }}>
+                                        <div style={{ display: "inline-block", marginLeft: "10px" }}>
                                             <div class="modal-dialog" >
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <img style={{ backgroundSize: "cover", width: "50px", height: "50px" }} class="img-responsive" src={url.p_url} />
-
+                                                        <a target="_blank" href={url.p_url}>
+                                                            <img style={{ backgroundSize: "cover", width: "75px", height: "75px" }} class="img-responsive" src={url.p_url} />
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -347,8 +368,9 @@ class EventDetailPage extends React.Component {
                                             <div class="modal-dialog" >
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <img style={{ backgroundSize: "cover", width: "50px", height: "50px" }} class="img-responsive" src={url.p_url} />
-
+                                                        <a target="_blank" href={url.p_url}>
+                                                            <img style={{ backgroundSize: "cover", width: "75px", height: "75px" }} class="img-responsive" src={url.p_url} />
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -362,7 +384,17 @@ class EventDetailPage extends React.Component {
                         <br /><br /><br />
 
                         <div className="col-5" >
-                            <div id="formModal" className="  modalCSS" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <h4>
+                                Event created by &nbsp;
+                                <span>
+                                <a type="button" class="btn btn-lg btn-danger" data-toggle="popover" title={this.state.eventOwnerDesc} class="card-link" style={{ color: "black", fontSize: '20px' }}>
+                                    {this.state.eventOwnerName} &nbsp; <img style={{backgroundSize: "cover", width: "50px", height: "50px"}} src={this.props.accounts.account.acc_profile_pic} />
+                                </a>
+                                </span>
+                            </h4>
+                            
+                            {this.state.eventTrashWeight == '0' &&
+                                <div id="formModal" className="  modalCSS" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div className="modal-dialog" role="document">
                                     <div class="modal-content cardCSS">
 
@@ -479,6 +511,8 @@ class EventDetailPage extends React.Component {
                                     </div>
                                 </div>
                             </div>
+                            }
+                            
                         </div>
                     </div>
                 </div>
@@ -491,6 +525,7 @@ const mapStateToProps = state => {
     return {
         event: state.event,
         volunteers: state.volunteers,
+        accounts: state.accounts
     }
 };
 
@@ -503,6 +538,7 @@ const mapDispatchToProps = (dispatch) => {
         actionAddVolunteers: (obj) => { dispatch(actionAddVolunteersRequest(obj)) },
         actionFetchVolunteers: () => { dispatch(actionFetchVolunteersRequest()) },
         actionDownloadVolunteersBySite: (siteid, sitename) => { dispatch(actionDownloadVolunteersBySiteRequest(siteid, sitename)) },
+        fetchAccountByID: (ownerID) => { dispatch(actionFetchAccountsByIDRequest(ownerID)) },
     }
 };
 

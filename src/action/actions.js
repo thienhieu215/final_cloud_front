@@ -7,7 +7,7 @@ export const actionAddEventsRequest = (event) => {
         console.log("check")
         return axios({
             method: 'POST',
-            url: 'http://localhost:3000/cleansite',
+            url: 'http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite',
             data: event
         }).then(res => {
             console.log("add event", res.data)
@@ -30,7 +30,7 @@ export const actionDeleteEventsRequest = (id) => {
 
         return axios({
             method: 'POST',
-            url: `http://localhost:3000/cleansite/delete/${id}`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/delete/${id}`,
             data: null
         }).then(res => {
             console.log(res.data, "data")
@@ -53,7 +53,7 @@ export const actionEditEventsRequest = (event, id) => {
     return async (dispatch) => {
         return axios({
             method: 'PUT',
-            url: `http://localhost:3000/cleansite/${id}`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/${id}`,
             data: event
         }).then(res => {
             console.log(res.data, "edited")
@@ -75,7 +75,7 @@ export const actionFetchEventsRequest = () => {
     return async (dispatch) => {
         return axios({
             method: 'GET',
-            url: 'http://localhost:3000/cleansite/all',
+            url: 'http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/all',
             data: null
         }).then(res => {
             dispatch(actionFetchEvents(res.data))
@@ -96,7 +96,7 @@ export const actionFetchEventsByIDRequest = (eventId) => {
     return async (dispatch) => {
         return axios({
             method: 'GET',
-            url: `http://localhost:3000/cleansite/${eventId}`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/${eventId}`,
             data: null
         }).then(res => {
             console.log(res.data[0], "get by id")
@@ -119,7 +119,7 @@ export const actionFetchEventsByOwnerRequest = (ownerId) => {
         console.log(ownerId, "123")
         return axios({
             method: 'GET',
-            url: `http://localhost:3000/account/${ownerId}/ownevent`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/account/${ownerId}/ownevent`,
             data: null
         }).then(res => {
             console.log(res.data, "get by owner")
@@ -141,7 +141,7 @@ export const actionFetchVolunteersByEmailRequest = (email) => {
     return async (dispatch) => {
         return axios({
             method: 'GET',
-            url: `http://localhost:3000/volunteer/${email}`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/volunteer/${email}`,
             data: null
         }).then(res => {
             console.log(res.data[0], "get by email")
@@ -163,7 +163,7 @@ export const actionAddVolunteersRequest = (volunteer) => {
     return async (dispatch) => {
         return axios({
             method: 'POST',
-            url: 'http://localhost:3000/volunteer',
+            url: 'http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/volunteer',
             data: volunteer
         }).then(res => {
             dispatch(actionAddVolunteers(res.data))
@@ -184,7 +184,7 @@ export const actionFetchVolunteersRequest = () => {
     return async (dispatch) => {
         return axios({
             method: 'GET',
-            url: 'http://localhost:3000/volunteer/all',
+            url: 'http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/volunteer/all',
             data: null
         }).then(res => {
             console.log(res.data, "get all volunteers")
@@ -206,7 +206,7 @@ export const actionAddSiteVolunteerRequest = (volunteer) => {
     return async (dispatch) => {
         return axios({
             method: 'POST',
-            url: 'http://localhost:3000/sitevolunteer',
+            url: 'http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/sitevolunteer',
             data: volunteer
         }).then(res => {
             dispatch(actionAddSiteVolunteer(res.data))
@@ -227,7 +227,7 @@ export const actionFetchVolunteersBySiteRequest = (siteID) => {
     return async (dispatch) => {
         return axios({
             method: 'GET',
-            url: `http://localhost:3000/cleansite/${siteID}/volunteer`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/${siteID}/volunteer`,
             data: null
         }).then(res => {
             console.log(res.data, "get by site id")
@@ -250,7 +250,7 @@ export const actionDownloadEventsByAccountRequest = (accountId, accountName) => 
         console.log(accountId, "id")
         return axios({
             method: 'GET',
-            url: `http://localhost:3000/account/${accountId}/ownevent/download`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/account/${accountId}/ownevent/download`,
             data: null,
             responseType: 'blob'
         }).then(res => {
@@ -272,7 +272,7 @@ export const actionDownloadVolunteersBySiteRequest = (siteID, siteName) => {
     return async (dispatch) => {
         return axios({
             method: 'GET',
-            url: `http://localhost:3000/cleansite/${siteID}/volunteer/download`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/${siteID}/volunteer/download`,
             data: null,
             responseType: 'blob'
         }).then(res => {
@@ -294,7 +294,7 @@ export const actionSendEmailVolunteersBySiteRequest = (siteID) => {
     return async (dispatch) => {
         return axios({
             method: 'POST',
-            url: `http://localhost:3000/cleansite/${siteID}/mailvolunteer`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/${siteID}/mailvolunteer`,
             data: null,
         }).then(res => {
             console.log("Sent email to volunteers by site")
@@ -309,7 +309,7 @@ export const actionFetchAccountsByIDRequest = (accountID) => {
     return async (dispatch) => {
         return axios({
             method: 'GET',
-            url: `http://localhost:3000/account/${accountID}`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/account/${accountID}`,
             data: null
         }).then(res => {
             console.log(res.data[0], "get by id")
@@ -323,5 +323,27 @@ export const actionFetchAccountsByID = (account) => {
     return {
         type: Types.FETCH_ACCOUNTS_BY_ID,
         payload: account
+    }
+}
+
+/////// EDIT ACCOUNT
+export const actionEditAccountRequest = (acc, id) => {
+    return async (dispatch) => {
+        return axios({
+            method: 'PUT',
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/account/${id}`,
+            data: acc
+        }).then(res => {
+            console.log(res.data, "edited")
+            dispatch(actionEditAccount(res.data))
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+}
+export const actionEditAccount = (acc) => {
+    return {
+        type: Types.EDIT_ACCOUNT,
+        payload: acc
     }
 }

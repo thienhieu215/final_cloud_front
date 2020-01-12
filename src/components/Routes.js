@@ -10,6 +10,8 @@ import signUp from '../pages/SignUp'
 import aboutUs from '../pages/AboutUs'
 import eventListPage from '../pages/EventListPage'
 import editLocationPage from '../pages/EditLocationPage'
+import instructions from '../pages/Instructions'
+
 
 class Routes extends Component {
 
@@ -26,6 +28,7 @@ class Routes extends Component {
         <Route path="/about-us" component={aboutUs} />
         <Route path="/event-list/" component={eventListPage} />
         <Route path="/edit-event/:eventID" component={editLocationPage} />
+        <Route path="/instructions" component={instructions} />
       </Switch>
     );
   }

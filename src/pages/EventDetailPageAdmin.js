@@ -88,7 +88,7 @@ class EventDetailPageAdmin extends React.Component {
                 this.props.fetchVolunteerBySite(eventID)
                 axios({
                     method: 'GET',
-                    url: `http://localhost:3000/cleansite/${eventID}`,
+                    url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/${eventID}`,
                     data: null
                 }).then(res => {
                     console.log(res.data, "data")
@@ -273,8 +273,16 @@ class EventDetailPageAdmin extends React.Component {
                             <div style={{ fontSize: "18px", fontWeight: "500" }}>Agenda: </div>
                             <div className="AppSmall">{this.state.eventDescription}</div> <br />
 
-                            <div style={{ fontSize: "18px", fontWeight: "500" }}>Report: </div>
-                            <div className="AppSmall">{this.state.eventDataCollected}</div> <br />
+                            {this.state.eventNumParticipants !== '0' && this.state.eventTrashWeight !== '0' &&
+                                <div>
+                                <div style={{ fontSize: "18px", fontWeight: "500" }}>Report: </div>
+                                <div className="AppSmall">Number of Participants: {this.state.eventNumParticipants}</div>
+                                <div className="AppSmall">Weight of trash has been collected: {this.state.eventTrashWeight}</div>
+                                <div className="AppSmall">Recyclable: {this.state.eventRecyclableTrash}</div>
+                                <div className="AppSmall">Non-Recyclable: {this.state.eventNonRecyclableTrash}</div>
+                                <div className="AppSmall">Organic: {this.state.eventOrganicTrash}</div>
+                                </div>
+                            }
 
                             <br /><br /><br />
 
@@ -313,12 +321,12 @@ class EventDetailPageAdmin extends React.Component {
 
                             <br />
                             
-                            {this.state.cs_pay == false &&
+                            {this.state.eventPay == false &&
                                 <button type="button" className="btn btn-danger btn-sm"
                                     onClick={() => { this.pay() }}>
                                     Confirm Payment
                                 </button>
-                            }
+                            } 
 
                         </div>
                     </div>

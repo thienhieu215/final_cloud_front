@@ -51,20 +51,27 @@ class EventDetailPageOwner extends React.Component {
             eventMreq: '',
             eventLreq: '',
             eventXLreq: '',
-            eventPay: true,
+            eventPay: false,
 
             vltEmail: '',
             vltName: '',
             vltDOB: '',
             vltAddress: '',
 
-
+            eventToolReqNew: '',
+            eventXSreqNew: '',
+            eventSreqNew: '',
+            eventMreqNew: '',
+            eventLreqNew: '',
+            eventXLreqNew: '',
 
             account: [],
             tokenId: '',
             tokenName: '',
 
             showForm: false,
+            showReqForm: false,
+
 
             notify: false,
             notify2: false,
@@ -88,6 +95,7 @@ class EventDetailPageOwner extends React.Component {
         this.handleeventRecyclableTrashChange = this.handleeventRecyclableTrashChange.bind(this)
         this.handleeventNonRecyclableTrashChange = this.handleeventNonRecyclableTrashChange.bind(this)
         this.handleeventOrganicTrashChange = this.handleeventOrganicTrashChange.bind(this)
+        this.onEditReq = this.onEditReq.bind(this)
     }
 
     handleeventNumParticipantsChange(e) {
@@ -136,6 +144,42 @@ class EventDetailPageOwner extends React.Component {
         });
     }
 
+    handleToolKitChange(e) {
+        this.setState({
+            eventToolReqNew: e.target.value
+        });
+    }
+
+    handleXSChange(e) {
+        this.setState({
+            eventXSreqNew: e.target.value
+        });
+    }
+
+    handleSChange(e) {
+        this.setState({
+            eventSreqNew: e.target.value
+        });
+    }
+
+    handleMChange(e) {
+        this.setState({
+            eventMreqNew: e.target.value
+        });
+    }
+
+    handleLChange(e) {
+        this.setState({
+            eventLreqNew: e.target.value
+        });
+    }
+
+    handleXLChange(e) {
+        this.setState({
+            eventXLreqNew: e.target.value
+        });
+    }
+
     componentDidMount() {
         const userToken = localStorage.getItem("usertoken")
         if (typeof userToken !== "undefined" && userToken !== null) {
@@ -147,7 +191,7 @@ class EventDetailPageOwner extends React.Component {
                 this.props.fetchVolunteerBySite(eventID)
                 axios({
                     method: 'GET',
-                    url: `http://localhost:3000/cleansite/${eventID}`,
+                    url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/${eventID}`,
                     data: null
                 }).then(res => {
                     var data = res.data[0]
@@ -172,8 +216,14 @@ class EventDetailPageOwner extends React.Component {
                         eventMreq: data.cs_m_shirt,
                         eventLreq: data.cs_l_shirt,
                         eventXLreq: data.cs_xl_shirt,
+                        eventToolReqNew: data.cs_rq_set,
+                        eventXSreqNew: data.cs_xs_shirt,
+                        eventSreqNew: data.cs_s_shirt,
+                        eventMreqNew: data.cs_m_shirt,
+                        eventLreqNew: data.cs_l_shirt,
+                        eventXLreqNew: data.cs_xl_shirt,
                         eventInEx: data.cs_inex,
-                        eventPay: data.cs_pay
+                        eventPay: Boolean(data.cs_pay)
                     })
                 }).catch(err => {
                     console.log(err)
@@ -182,6 +232,38 @@ class EventDetailPageOwner extends React.Component {
         } else {
             window.location.href = "/#/sign-in"
         }
+    }
+
+    onEditReq(e) {
+        e.preventDefault();
+        const obj = {
+            clean_site_id: this.state.eventId,
+            cs_name: this.state.eventName,
+            cs_address_name: this.state.eventLocationName,
+            cs_address: this.state.eventAddress,
+            cs_lat: this.state.eventCoordLat,
+            cs_long: this.state.eventCoordLng,
+            cs_agenda: this.state.eventDescription,
+            cs_start_time: this.state.eventStartDateTime,
+            cs_end_time: this.state.eventEndDateTime,
+            cs_inex: this.state.eventInEx,
+            cs_ptcp_no: this.state.eventParticipants.length.toString(),
+            cs_amount_collected: this.state.eventTrashWeight,
+            cs_organic: this.state.eventOrganicTrash,
+            cs_recy: this.state.eventRecyclableTrash,
+            cs_non_recy: this.state.eventNonRecyclableTrash,
+            cs_xs_shirt: this.state.eventXSreqNew,
+            cs_s_shirt: this.state.eventSreqNew,
+            cs_m_shirt: this.state.eventMreqNew,
+            cs_l_shirt: this.state.eventLreqNew,
+            cs_xl_shirt: this.state.eventXLreqNew,
+            cs_rq_set: this.state.eventToolReqNew,
+            cs_pay: this.state.eventPay
+        };
+        this.props.actionEditEvents(obj, this.state.eventId)
+        this.setState({
+            notify3: true
+        })
     }
 
     toggleOpenForm = (bool) => {
@@ -234,7 +316,7 @@ class EventDetailPageOwner extends React.Component {
 
     showResultForm = () => {
         this.setState({
-            showForm: true,
+            showForm: !this.state.showForm,
         })
     }
 
@@ -301,14 +383,16 @@ class EventDetailPageOwner extends React.Component {
             cs_m_shirt: this.state.eventMreq,
             cs_l_shirt: this.state.eventLreq,
             cs_xl_shirt: this.state.eventXLreq,
-            cs_rq_set: this.state.eventToolReq
+            cs_rq_set: this.state.eventToolReq,
+            cs_pay: this.state.eventPay
         };
-        if (this.state.eventParticipants.length == 0) {
-          this.setState({
-                errorNum: true,
-                errorWeight: false
-          })
-        } else if (this.state.eventTrashWeight === "unknown") {
+        // if (this.state.eventParticipants.length == 0) {
+        //   this.setState({
+        //         errorNum: true,
+        //         errorWeight: false
+        //   })
+        // } else 
+        if (this.state.eventTrashWeight === "unknown") {
             console.log("check desc")
             this.setState({
                 errorNum: false,
@@ -320,7 +404,7 @@ class EventDetailPageOwner extends React.Component {
             for (let i = 0; i < this.state.files.length; i++) {
                 fd.append('galleryImage', this.state.files[i], this.state.files[i].name)
             }
-            axios.post(`http://localhost:8081/photo/basic/${this.state.tokenId}/${this.state.eventId}/upload`, fd)
+            axios.post(`http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/photo/basic/${this.state.tokenId}/${this.state.eventId}/upload`, fd)
                 .then(res => {
                     console.log(res)
                 });
@@ -334,7 +418,7 @@ class EventDetailPageOwner extends React.Component {
     fileUploadHandler = () => {
         const fd = new FormData();
         fd.append('image')
-        axios.post(`localhost:8081/photo/basic/${this.state.tokenId}/${this.state.eventId}/upload`);
+        axios.post(`http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/photo/basic/${this.state.tokenId}/${this.state.eventId}/upload`);
     }
 
     pay() {
@@ -408,8 +492,17 @@ class EventDetailPageOwner extends React.Component {
                             <div style={{ fontSize: "18px", fontWeight: "500" }}>Agenda: </div>
                             <div className="AppSmall">{this.state.eventDescription}</div> <br />
 
-                            <div style={{ fontSize: "18px", fontWeight: "500" }}>Report: </div>
-                            <div className="AppSmall">{this.state.eventDataCollected}</div> <br />
+                            {this.state.eventNumParticipants !== '0' && this.state.eventTrashWeight !== '0' &&
+                                <div>
+                                <div style={{ fontSize: "18px", fontWeight: "500" }}>Report: </div>
+                                <div className="AppSmall">Number of Participants: {this.state.eventNumParticipants}</div>
+                                <div className="AppSmall">Weight of trash has been collected: {this.state.eventTrashWeight}</div>
+                                <div className="AppSmall">Recyclable: {this.state.eventRecyclableTrash}</div>
+                                <div className="AppSmall">Non-Recyclable: {this.state.eventNonRecyclableTrash}</div>
+                                <div className="AppSmall">Organic: {this.state.eventOrganicTrash}</div>
+                                </div>
+                            }
+                            
 
                             <br /><br /><br />
 
@@ -445,13 +538,31 @@ class EventDetailPageOwner extends React.Component {
                                 )}
                                 <br />
                                 <a href={`/#/event-detail-owner/${this.state.eventId}`} onClick={this.download}>Download list of volunteers</a>
+                                <br/>
                                 <a href={`/#/event-detail-owner/${this.state.eventId}`} onClick={this.sendEmail.bind(this)}>Send email to volunteers</a>
                             </div>
 
                             <br /><br />
 
                             <div>
-                                <h5 class="modal-title">Tools Requirements</h5>
+                                <h5 class="modal-title">Tools Requirements &nbsp;<span>
+                                    {this.state.eventPay == false &&
+                                        <button type="button" className="btn btn-secondary btn-sm"
+                                            onClick={() => { this.setState({ showReqForm: !this.state.showReqForm }) }}>
+                                            Change Tool Requirements
+                                        </button>
+                                    }
+                                    
+                                        {this.state.eventPay == false &&
+                                            <h4 style={{color: 'red'}}>Not Paid!</h4>
+                                        }
+                                        {this.state.eventPay == true &&
+                                            <h4 style={{color: 'green'}}>Paid!</h4>
+                                        }
+                                    
+                                    
+                                </span></h5>
+
                                 <br />
                                 <h6>Tool kits: {this.state.eventToolReq}</h6>
                                 <h6>Shirts: </h6>
@@ -461,10 +572,100 @@ class EventDetailPageOwner extends React.Component {
                                 <div>L: {this.state.eventLreq}</div>
                                 <div>XL: {this.state.eventXLreq}</div>
                             </div>
-                            <button type="button" className="btn btn-danger btn-sm"
-                                onClick={() => { this.pay() }}>
-                                Change Tool Requirements
-                            </button>
+                            <br/>
+                            
+                            <br />
+
+                            {this.state.showReqForm &&
+                                <form action='#' id='book-form' className="{formStatus} needs-validation"
+                                onSubmit={this.onEditReq}
+                                novalidate>
+                                    <div className="row">
+                                        <div className="col-3">
+                                            <div className="form-group">
+                                                <label>Tool Kits *</label>
+                                                <input type="number" className="col"
+                                                    pattern="[0-9]*"
+                                                    placeholder="name..."
+                                                    className="form-control"
+                                                    value={this.state.eventToolReqNew}
+                                                    onChange={this.handleToolKitChange.bind(this)}
+                                                    style={{ width: "100px" }}
+                                                />
+                                            </div>
+
+                                            <div className="form-group">
+                                                <label>Shirt XS *</label>
+                                                <input type="number" className="col"
+                                                    pattern="[0-9]*"
+                                                    placeholder="name..."
+                                                    className="form-control"
+                                                    value={this.state.eventXSreqNew}
+                                                    onChange={this.handleXSChange.bind(this)}
+                                                    style={{ width: "100px" }}
+                                                />
+                                            </div>
+
+                                            <div className="form-group">
+                                                <label>Shirt S *</label>
+                                                <input type="number" className="col"
+                                                    pattern="[0-9]*"
+                                                    placeholder="address..."
+                                                    className="form-control"
+                                                    value={this.state.eventSreqNew}
+                                                    onChange={this.handleSChange.bind(this)}
+                                                    style={{ width: "100px" }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="col-3">
+                                            <div className="form-group">
+                                                <label>Shirt M *</label>
+                                                <input type="number" className="col"
+                                                    pattern="[0-9]*"
+                                                    placeholder="name..."
+                                                    className="form-control"
+                                                    value={this.state.eventMreqNew}
+                                                    onChange={this.handleMChange.bind(this)}
+                                                    style={{ width: "100px" }}
+                                                />
+                                            </div>
+
+                                            <div className="form-group">
+                                                <label>Shirt L *</label>
+                                                <input type="number" className="col"
+                                                    pattern="[0-9]*"
+                                                    placeholder="name..."
+                                                    className="form-control"
+                                                    value={this.state.eventLreqNew}
+                                                    onChange={this.handleLChange.bind(this)}
+                                                    style={{ width: "100px" }}
+                                                />
+                                            </div>
+
+                                            <div className="form-group">
+                                                <label>Shirt XL *</label>
+                                                <input type="number" className="col"
+                                                    pattern="[0-9]*"
+                                                    placeholder="name..."
+                                                    className="form-control"
+                                                    value={this.state.eventXLreqNew}
+                                                    onChange={this.handleXLChange.bind(this)}
+                                                    style={{ width: "100px" }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <button type="submit" className="btn btn-success btn-sm"
+                                        // onSubmit={this.onEditReq}
+                                        >
+                                        Send
+                                    </button>
+                                </form>
+                            }
 
                         </div>
 
@@ -497,14 +698,15 @@ class EventDetailPageOwner extends React.Component {
                                     <div className="col-6">
                                         <div className="form-group">
                                             <label>Weight of trash has been collected *</label>
-                                            <input type="text" className="col"
+                                            <input type="number" className="col"
+                                                    pattern="[0-9]*"
                                                 placeholder="kilograms..."
                                                 className="form-control"
                                                 value={this.state.eventTrashWeight}
                                                 onChange={this.handleeventTrashWeightChange}
                                             />
                                             {this.state.errorWeight &&
-                                                <span className='error'>Invalid Email!</span>}
+                                                <span className='error'>Invalid Weight!</span>}
                                         </div>
                                     </div>
                                 </div>
@@ -516,7 +718,8 @@ class EventDetailPageOwner extends React.Component {
                                     <div className="col-6">
                                         <div className="form-group">
                                             <label>Recyclable *</label>
-                                            <input type="text" className="col"
+                                            <input type="number" className="col"
+                                                    pattern="[0-9]*"
                                                 placeholder="number..."
                                                 className="form-control"
                                                 name='vltEmail'
@@ -528,7 +731,8 @@ class EventDetailPageOwner extends React.Component {
 
                                         <div className="form-group">
                                             <label>Organic *</label>
-                                            <input type="text" className="col"
+                                            <input type="number" className="col"
+                                                    pattern="[0-9]*"
                                                 placeholder="number..."
                                                 className="form-control"
                                                 name='vltEmail'
@@ -542,7 +746,8 @@ class EventDetailPageOwner extends React.Component {
                                     <div className="col-6">
                                         <div className="form-group">
                                             <label>Non-Recyclable *</label>
-                                            <input type="text" className="col"
+                                            <input type="number" className="col"
+                                                    pattern="[0-9]*"
                                                 placeholder="kilograms..."
                                                 className="form-control"
                                                 // value={this.state.eventNonRecyclableTrash}
@@ -558,12 +763,14 @@ class EventDetailPageOwner extends React.Component {
 
                                     <div>
                                         <br />
-                                        <input style={{ display: "none" }}
+                                        <input 
+                                        // style={{ display: "none" }}
                                             type="file" accept="image/png, image/jpeg, image/jpg, image/gif, image/jfif"
                                             multiple
                                             onChange={this.fileSelectedHandler}
-                                            ref={fileInput => this.fileInput = fileInput} />
-                                        <button onClick={() => this.fileInput.click()}>Import photos</button>
+                                            // ref={fileInput => this.fileInput = fileInput} 
+                                            />
+                                        {/* <button onClick={() => this.fileInput.click()}>Import photos</button> */}
                                     </div>
 
                                     <div className="imgPreview">

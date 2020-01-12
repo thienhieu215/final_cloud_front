@@ -13,6 +13,13 @@ export default function (state = initialState, action) {
                 ...state,
                 account: action.payload
             }
+
+        case Types.EDIT_ACCOUNT:
+            let filteredEdit = state.accounts.filter((acc) => acc.acc_id !== action.payload)
+            return {
+                ...state,
+                accounts: filteredEdit
+            }
         default: return state
     }
 }

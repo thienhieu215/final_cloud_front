@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { bounce } from 'react-animations'
 import styled, { keyframes } from 'styled-components'
 import Pagination from './../pages/Pagination'
+import './../css/style.css'
 
 const Bounce = styled.div`animation: 2s ${keyframes`${bounce}`} infinite`
 
@@ -34,7 +35,7 @@ const Map = compose(
     withGoogleMap
 )(props => {
     const mapRef = useRef(null)
-    const [zoom, setZoom] = useState(12)
+    const [zoom, setZoom] = useState(9)
     const [marker, setMarker] = useState({ hasMarker: false, position: {} })
     const [center, setCenter] = useState({ lat: 10.777428, lng: 106.695448 })
 
@@ -62,36 +63,41 @@ const Map = compose(
     }
     return (
         <GoogleMap zoom={zoom}
-                    center={center}
-                    style={{ height: '75vh' }}>
+            center={center}
+            style={{ height: '75vh' }}>
             <Bounce>
 
-            <SearchBox onPlacesChanged={handlePlacesChanged} /></Bounce>
+                <SearchBox onPlacesChanged={handlePlacesChanged} /></Bounce>
             {marker.hasMarker}
 
-            <MarkerClusterer averageCenter
-                            enableRetinaIcons
-                            gridSize={30}>
+            {/* <MarkerClusterer averageCenter
+                enableRetinaIcons
+                gridSize={30}> */}
 
                 {props.display.map((point, index) => (
                     <Marker key={index}
-                            animation={props ? (point.clean_site_id === props.markerIndex ? '1' : '0') : '0'}
-                            position={{ lat: parseFloat(point.cs_lat), lng: parseFloat(point.cs_long) }}
-                            onClick={() => { props.onToggleOpen(index) }}>
+                        animation={props ? (point.clean_site_id === props.markerIndex ? '1' : '0') : '0'}
+                        position={{ lat: parseFloat(point.cs_lat), lng: parseFloat(point.cs_long) }}
+                        onClick={() => { props.onToggleOpen(index) }}>
 
                         {props.isOpen && props.markerIndex === index &&
                             // point.clean_site_id === props.markerIndex &&
                             <InfoWindow onCloseClick={props.onToggleOpen} onPositionChanged={() => { zoomIn(parseFloat(point.cs_lat), parseFloat(point.cs_long)) }}>
                                 <div className="infoWindow"  >
-                                    <h5>{point.cs_name}</h5>
-                                    <p style={{ fontSize: "16px" }}>{point.cs_address}</p>
+                                    {/* <h5>{point.cs_name} </h5> */}
+                                    <h5 class="card-title">{point.cs_name} <span style={{ fontWeight: "normal", fontSize: "12px" }}>
+                                        <a type="button" class="btn btn-lg btn-danger" data-toggle="popover" title={point.cs_owner_description} data-content="And here's some amazing content. It's very engaging. Right?" class="card-link" style={{ color: "black" }}>
+                                            by {point.cs_owner_name}
+                                        </a>
+                                    </span></h5>
+                                    <p style={{ fontSize: "15px" }}>{point.cs_address}</p>
                                     <Link to={`/event-detail/${point.clean_site_id}`}>See more...</Link>
                                 </div>
                             </InfoWindow>
                         }
                     </Marker>
                 ))}
-            </MarkerClusterer>
+            {/* </MarkerClusterer> */}
         </GoogleMap>
     )
 }
@@ -149,7 +155,7 @@ class MapUI extends Component {
         if (this.state.filterTime == "Morning") {
             let array = this.props.events.events.filter(value =>
                 value.cs_name.toLowerCase().includes(this.state.keyword.toLowerCase())
-                && value.cs_owner.toLowerCase().includes(this.state.organizerName.toLowerCase())
+                && value.cs_owner_name.toLowerCase().includes(this.state.organizerName.toLowerCase())
                 && value.cs_address.includes(this.state.filterDistrict)
                 && value.cs_address.includes(this.state.filterCity)
                 && new Date(value.cs_start_time).getHours() < 12)
@@ -158,7 +164,7 @@ class MapUI extends Component {
         } else if (this.state.filterTime == "Afternoon") {
             let array = this.props.events.events.filter(value =>
                 value.cs_name.toLowerCase().includes(this.state.keyword.toLowerCase())
-                && value.cs_owner.toLowerCase().includes(this.state.organizerName.toLowerCase())
+                && value.cs_owner_name.toLowerCase().includes(this.state.organizerName.toLowerCase())
                 && value.cs_address.includes(this.state.filterDistrict)
                 && value.cs_address.includes(this.state.filterCity)
                 && new Date(value.cs_start_time).getHours() < 17 && new Date(value.cs_start_time).getHours() >= 12)
@@ -167,7 +173,7 @@ class MapUI extends Component {
         } else if (this.state.filterTime == "Evening") {
             let array = this.props.events.events.filter(value =>
                 value.cs_name.toLowerCase().includes(this.state.keyword.toLowerCase())
-                && value.cs_owner.toLowerCase().includes(this.state.organizerName.toLowerCase())
+                && value.cs_owner_name.toLowerCase().includes(this.state.organizerName.toLowerCase())
                 && value.cs_address.includes(this.state.filterDistrict)
                 && value.cs_address.includes(this.state.filterCity)
                 && new Date(value.cs_start_time).getHours() < 21 && new Date(value.cs_start_time).getHours() >= 17)
@@ -179,7 +185,7 @@ class MapUI extends Component {
         } else if (this.state.filterTime == "") {
             let array = this.props.events.events.filter(value =>
                 value.cs_name.toLowerCase().includes(this.state.keyword.toLowerCase())
-                && value.cs_owner.toLowerCase().includes(this.state.organizerName.toLowerCase())
+                && value.cs_owner_name.toLowerCase().includes(this.state.organizerName.toLowerCase())
                 && value.cs_address.includes(this.state.filterDistrict)
                 && value.cs_address.includes(this.state.filterCity))
             this.setState({ displayItems: array })
@@ -233,6 +239,21 @@ class MapUI extends Component {
             <div className="App" style={{ backgroundColor: "rgb(250, 250, 250)" }}>
                 <br /><br /><br /><br /><br />
 
+                <div className='container'>
+                    <div className='row'>
+                        <div className='col-4'>
+                            <img src="https://160g7a3snajg2i1r662yjd5r-wpengine.netdna-ssl.com/wp-content/uploads/50th-logos-finished-blue-transparent-01.png" width="325vh" height="125vh" />
+                            <br /><br />
+                        </div>
+                        <div className='col-8'>
+                            Earth Day Clean Up is an annual event that aims for a beautiful and free of trash environment. Our final goal is to raise awareness about the litter & trash issue by educating people and being proactive in protecting the country from careless littering.
+                            <br /><br />
+                            All volunteers (including companies, universities, social organizations and individuals) will be provided the green T–shirts of ‘Viet Nam Sach & Xanh’ with our partners’ logos in order to create a consistent message in society about keeping Vietnam beautiful and free of littering.
+                        </div>
+                    </div>
+                </div>
+
+                <br />
                 <div className="pageTitle">Clean Up Events Around You</div>
                 <br />
 
@@ -351,7 +372,15 @@ class MapUI extends Component {
                 <div className="row">
                     <div className='col-1'>
                         <div>
-                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/vespa-adventures.png" width="150%" height="150%" />
+                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/Logo-WAVE.png" width="100%" height="100%" />
+                            <br /><br /><br />
+                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/a1.-HCMC-US-Consulate-logo-high-ress.png" width="100%" height="100%" />
+                            <br /><br /><br />
+                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/vespa-adventures.png" width="100%" height="100%" />
+                            <br /><br /><br />
+                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/a2000px-Intel-logo.svgs_.png" width="100%" height="100%" />
+                            <br /><br /><br />
+                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/RMIT_University_Logo.svg_.png" width="100%" height="100%" />
                         </div>
 
                     </div>
@@ -361,24 +390,28 @@ class MapUI extends Component {
                                 <h6 className='container'>No events match your filters.</h6>
                             </div>
                         }
-                        {this.state.pageOfItems.map((event, index) =>
-                            <div style={{ paddingBottom: "10px" }}>
-                                <div className="card" onClick={() => this.onChildClick(index, event.cs_lat, event.cs_long)} >
-                                    <div class="card-body">
-                                        <h5 class="card-title">{event.cs_name} <span style={{ fontWeight: "normal", fontSize: "16px" }}>
-                                            <a type="button" class="btn btn-lg btn-danger" data-toggle="popover" title="Popoverrr title" data-content="And here's some amazing content. It's very engaging. Right?" class="card-link" style={{ color: "black" }}>
-                                                by {event.cs_owner}
-                                            </a>
-                                        </span></h5>
-                                        <h6 class="card-subtitle mb-2 text-muted">{this.getDate(event.cs_start_time)}, {this.getTime(event.cs_start_time)}</h6>
-                                        <a href={`/#/event-detail/${event.clean_site_id}`} class="card-link">See more...</a>
-                                    </div>
-
-                                </div>
-                            </div>
-                        )}
                         {this.state.displayItems.length !== 0 &&
-                            <Pagination pageSize={2} initialPage={1} items={this.state.displayItems} onChangePage={this.onChangePage.bind(this)} />
+                            <div>
+                                {this.state.pageOfItems.map((event, index) =>
+                                    <div style={{ paddingBottom: "10px" }}>
+                                        <div className="card" onClick={() => this.onChildClick(index, event.cs_lat, event.cs_long)} >
+                                            <div class="card-body">
+                                                <h4 class="card-title">{event.cs_name} <span style={{ fontWeight: "normal", fontSize: "16px" }}>
+                                                    <a type="button" class="btn btn-lg btn-danger" data-toggle="popover" title={event.cs_owner_description} data-content="And here's some amazing content. It's very engaging. Right?" class="card-link" style={{ color: "black" }}>
+                                                        by {event.cs_owner_name}
+                                                    </a>
+                                                </span></h4>
+                                                <h6 class="card-subtitle mb-2 text-muted">{this.getDate(event.cs_start_time)}, {this.getTime(event.cs_start_time)}</h6>
+                                                <p style={{ fontSize: "16px" }}>{event.cs_address}</p>
+                                                <a href={`/#/event-detail/${event.clean_site_id}`} class="card-link">See more...</a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                )}
+
+                                <Pagination pageSize={3} initialPage={1} items={this.state.displayItems} onChangePage={this.onChangePage.bind(this)} />
+                            </div>
                         }
                     </div>
 
@@ -396,7 +429,15 @@ class MapUI extends Component {
 
                     <div className="col-1">
                         <div>
-                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/vespa-adventures.png" width="150%" height="150%" />
+                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/a1.-SSISs.png" width="100%" height="100%" />
+                            <br /><br /><br />
+                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/aaAmChamss.png" width="100%" height="100%" />
+                            <br /><br /><br />
+                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/heineken-vietnam-brewery-5a050226408b8.jpg" width="100%" height="100%" />
+                            <br /><br /><br />
+                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/1.png" width="100%" height="100%" />
+                            <br /><br /><br />
+                            <img src="http://vietnamsachvaxanh.org/wp-content/uploads/asamsung_logo_PNG3s.png" width="100%" height="100%" />
                         </div>
                     </div>
                 </div>

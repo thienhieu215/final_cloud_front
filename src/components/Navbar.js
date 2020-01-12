@@ -3,6 +3,7 @@ import './../css/style.css';
 import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import jwtDecode from 'jwt-decode'
+import { actionFetchAccountsByIDRequest } from '../action/actions'
 
 
 class Navbar extends Component {
@@ -22,6 +23,7 @@ class Navbar extends Component {
         this.setState({ token: userToken })
         if (typeof userToken !== "undefined" && userToken !== null) {
             var decoded = jwtDecode(userToken);
+            this.props.fetchAccountByID(decoded.acc_id)
             this.setState({ name: decoded.acc_username })
         }
     }
@@ -68,7 +70,7 @@ class Navbar extends Component {
                             {typeof this.state.name !== 'undefined' &&
                                 <ul className="navbar-nav">
                                     <Button className="nav-link navFontColor" href="#/event-list" style={{ backgroundColor: "rgb(250, 250, 250)" }}>
-                                        {this.state.name} Events
+                                        {this.props.accounts.account.acc_username} Events
                                 </Button>
                                 </ul>
                             }
@@ -104,5 +106,19 @@ class Navbar extends Component {
     }
 }
 
+const mapStateToProps = state => {
+    return {
+      accounts: state.accounts
+    }
+  }
+  
+const mapDispatchToProps = (dispatch) => {
+    return {
+      fetchAccountByID: (ownerID) => { dispatch(actionFetchAccountsByIDRequest(ownerID)) },
+    }
+}
+  
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar)
 
-export default (Navbar);
+
+// export default (Navbar);

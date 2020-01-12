@@ -6,7 +6,8 @@ import { actionFetchEventsRequest,
   actionFetchEventsByIDRequest,
   actionFetchEventsByOwnerRequest,
   actionFetchAccountsByIDRequest,
-  actionDownloadEventsByAccountRequest } from '../action/actions'
+  actionDownloadEventsByAccountRequest,
+  actionEditAccountRequest } from '../action/actions'
 import { Link } from 'react-router-dom';
 import {Modal,ModalHeader,ModalBody} from 'reactstrap'
 import jwtDecode from 'jwt-decode'
@@ -26,9 +27,18 @@ class EventListPage extends Component {
       readytodeleteEvent: '',
       notify: false,
       idNow: '',
+      emailNow: '',
       nameNow: '',
       descNow: '',
+      passNow: '',
       photoNow: '',
+      imagePreviewUrl: [],
+      files: [],
+      nameNew: '',
+      descNew: '',
+      photoNew: '',
+
+      showEdit: false,
 
       keyword: '',
       filterCity: "",
@@ -37,11 +47,15 @@ class EventListPage extends Component {
     }
     this.closeModal = this.closeModal.bind(this)
     this.download = this.download.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
+    this.openEdit = this.openEdit.bind(this)
     this.handleChange = this.handleChange.bind(this);
     this.onChangeFilterCity = this.onChangeFilterCity.bind(this);
     this.onChangeFilterDistrict = this.onChangeFilterDistrict.bind(this);
     this.onChangeFilterTime = this.onChangeFilterTime.bind(this);
-  }
+    this.handleNameChange = this.handleNameChange.bind(this)
+    this.handleDescChange = this.handleDescChange.bind(this)
+  }  
 
   componentDidMount() {
 
@@ -53,12 +67,16 @@ class EventListPage extends Component {
       var decoded = jwtDecode(userToken);
       const id = decoded.acc_id;
       const name = decoded.acc_username;
+      const pass = decoded.acc_pass;
       const desc = decoded.acc_description;
+      const email = decoded.acc_email;
       const photo = decoded.acc_profile_pic
-      this.setState({idNow: id, nameNow: name, descNow: desc, photoNow: photo})
+      this.setState({idNow: id, emailNow: email, passNow: pass, nameNow: name, nameNew: name, descNew: desc, descNow: desc, photoNow: photo})
       if (decoded.acc_username == "admin") {
+        this.props.fetchAccountByID(decoded.acc_id)
         this.props.actionFetchEvents()
       } else{
+        this.props.fetchAccountByID(decoded.acc_id)
         this.props.fetchEventsByOwner(id)
         this.setState({ displayItems: this.props.events.events })
       }
@@ -66,7 +84,7 @@ class EventListPage extends Component {
     else if (socialType == "facebook"){
         axios({
             method: 'GET',
-            url: `http://localhost:3000/sociallogin/fblogin`,
+            url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/sociallogin/fblogin`,
             data: null
         })
             .then(res => {
@@ -91,7 +109,7 @@ class EventListPage extends Component {
     else if (socialType == "gmail"){
             axios({
                 method: 'GET',
-                url: `http://localhost:3000/sociallogin/gmaillogin`,
+                url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/sociallogin/gmaillogin`,
                 data: null
             })
                 .then(res => {
@@ -113,10 +131,13 @@ class EventListPage extends Component {
                     console.log(err)
                 })
 
+    } else {
+      window.location.href="/#/sign-in"
     }
   }
   componentWillReceiveProps(props) {
     this.setState({ displayItems: props.events.events })
+    this.setState({ nameNew: this.props.accounts.account.acc_username, descNew: this.props.accounts.account.acc_description})
   }
 
 
@@ -206,6 +227,74 @@ deleteBooking(name) {
       })
   }
 
+  openEdit(e) {
+    this.setState({
+        showEdit: !this.state.showEdit
+    })
+  }
+
+  onSubmit(e) {
+    const obj = {
+      acc_id: this.state.idNow,
+      acc_username: this.state.nameNew,
+      acc_description: this.state.descNew
+    };
+    this.props.actionEditAccount(obj, this.state.idNow)
+  }
+
+  fileSelectedHandler = (e) => {
+    let reader = new FileReader();
+    this.setState({
+      files: [...e.target.files],
+    })
+    reader.readAsDataURL(e.target.files[0])
+    this.state.imagePreviewUrl.pop()
+    reader.onloadend = () => {
+      this.setState({
+        imagePreviewUrl: [reader.result]
+      })
+    }
+  }
+
+  removePreview(e) {
+    let recent = this.state.files
+    let recent2 = this.state.imagePreviewUrl
+    recent.splice(e, 1)
+    recent2.splice(e, 1)
+    this.setState({
+      files: recent,
+      imagePreviewUrl: recent2
+    })
+  }
+
+  fileUploadHandler = () => {
+    if(this.state.files.length !== 0) {
+      const fd = new FormData();
+    fd.append('galleryImage', this.state.files[0], this.state.files[0].name)    
+    axios.post(`http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/photo/profile/${this.state.idNow}/upload`, fd)
+    .then(res => {
+      console.log(res)
+      this.onSubmit()
+      window.location.reload()
+  });
+    } else {
+      this.onSubmit()
+      window.location.reload()
+    }
+  }
+
+  handleNameChange(e) {
+    this.setState({
+      nameNew: e.target.value
+    })
+  }
+
+  handleDescChange(e) {
+    this.setState({
+      descNew: e.target.value
+    })
+  }
+
   render() {
     console.log(this.state, "state")
     return (
@@ -227,20 +316,121 @@ deleteBooking(name) {
               </button>
             </ModalBody>
           </Modal>
-        <div className='row'>
+          <div className='row'>
           <div className='col-2'>
-            <img style={{backgroundSize: "cover", width: "200px", height: "200px"}} class="img-responsive" src={this.state.photoNow} />
+            <img style={{backgroundSize: "cover", width: "200px", height: "200px"}} class="img-responsive" src={this.props.accounts.account.acc_profile_pic} />
+            <br/>
+            <div style={{ marginLeft: 'auto', marginRight: 'auto'}}>
+            </div>
+            
           </div>
-          <div className='col-8'>
-            <h3>{this.state.nameNow}</h3>
-            <p>{this.state.descNow}</p>
+          <div className='col'>
+            <h3>{this.props.accounts.account.acc_username}</h3>
+            <p>{this.props.accounts.account.acc_description}</p>
+            <button className='btn btn-info btn-sm' onClick={this.openEdit} >Edit Profile</button>
           </div>
+          {this.state.showEdit &&
+            
+            <div className='col-5'>
+              <div id="formModal" className="  modalCSS" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div className="modal-dialog" role="document">
+                                    <div class="modal-content cardCSS">
+
+                                    <div class="modal-header">
+                                            <h5>Edit Your Info</h5>
+                                        </div>
+                                        <div className='modal-body'>
+                                        <form action='#' id='book-form' className="{formStatus} needs-validation"
+                                                onSubmit={this.fileUploadHandler}
+                                                novalidate>
+                                                  <div className='row'>
+                                                    <div className='col-6'>
+                                                      <div className="form-group">
+                                                      <label>Organizer Name *</label>
+                                                      <input type="text" className="col"
+                                                          placeholder="abc@example.com"
+                                                          className="form-control"
+                                                          value={this.state.nameNew}
+                                                          onChange={this.handleNameChange}
+                                                          noValidate
+                                                      />
+                                                      {/* {this.state.emailErr &&
+                                                          <span className='error'>Invalid Email!</span>} */}
+                                                    </div>
+
+                                                    <div className="form-group">
+                                                      <label>Organizer Description *</label>
+                                                      {/* <input type="text" className="col"
+                                                          placeholder="abc@example.com"
+                                                          className="form-control"
+                                                          name='descNow'
+                                                          value={this.state.descNew}
+                                                          onChange={this.handleDescChange}
+                                                          noValidate
+                                                      /> */}
+                                                      <textarea placeholder="tell everyone a bit about your event..."
+                                                          className="form-control"
+                                                          id="exampleFormControlTextarea1"
+                                                          rows="3"
+                                                          value={this.state.descNew}
+                                                          onChange={this.handleDescChange}
+                                                      >
+                                                      </textarea>
+                                                      {/* {this.state.emailErr &&
+                                                          <span className='error'>Invalid Email!</span>} */}
+                                                    </div>
+                                                    </div>
+
+                                                    <div className='col-6'>
+                                                    <div className="form-group">
+                                                      <label>Profile Picture *</label>
+                                                      <input type="file" accept="image/png, image/jpeg, image/jpg, image/gif, image/jfif" onChange={this.fileSelectedHandler} />
+                                                      <div className="imgPreview">
+                                                      {this.state.imagePreviewUrl.map((url, index) =>
+                                                        <div style={{ display: "inline-block" }}>
+                                                          <div class="modal-dialog" >
+                                                            <div class="modal-content">
+                                                              <div class="modal-header">
+                                                                <img style={{ backgroundSize: "cover", width: "100px", height: "100px" }} class="img-responsive" src={url} />
+                                                                <button type="button" class="close"
+                                                                  onClick={() => { this.removePreview(index) }}
+                                                                  style={{ fontSize: "20px" }}>&times;</button>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          &nbsp;
+                                                        </div>
+                                                      )}
+                                                    </div>
+                                                      {/* {this.state.emailErr &&
+                                                          <span className='error'>Invalid Email!</span>} */}
+                                                    </div>
+                                                  </div>
+
+
+                                                  </div>
+
+                                                  
+                                                  
+
+                                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                  <button className='btn btn-info' type="button" onClick={this.fileUploadHandler}>Save</button>
+                                                  </div>
+                                                  
+
+                                                </form>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    </div>
+            </div>
+          }
+          
+
         </div>
-        <br/>
-        <div className="pageTitle">List of Events</div>
-        <br/>
-        <a href='/#/event-list' onClick={this.download}>Download your events</a>
-        <br/>
+        <br/><br/><br/><br/>
+        <div className="pageTitle">List of Events &nbsp; <span><a style={{fontSize: "16px"}} href='/#/event-list' onClick={this.download}>Download your events</a></span></div>
+
         {this.state.nameNow == "admin" && 
         <div className="form-inline searchCenter">
 
@@ -361,7 +551,7 @@ deleteBooking(name) {
                   <td ><Link style={{fontWeight: "500", color:"black"}} to={`/event-detail-admin/${event.clean_site_id}` }>{event.cs_name}</Link></td>
                 }
                 <td >{this.getDate(event.cs_start_time)}, {this.getTime(event.cs_start_time)}-{this.getTime(event.cs_end_time)}</td>
-                <td >{this.getTime(event.cs_end_time)}, {this.getDate(event.cs_end_time)}</td>
+                <td >{event.cs_address_name}</td>
                 <td >{event.cs_address}</td>
                 {this.state.nameNow == 'admin' && 
                 <td>
@@ -392,6 +582,7 @@ deleteBooking(name) {
 const mapStateToProps = state => {
   return {
     events: state.events,
+    accounts: state.accounts
   }
 }
 
@@ -399,10 +590,11 @@ const mapDispatchToProps = (dispatch) => {
   return {
     fetchEventsById: (id) => { dispatch(actionFetchEventsByIDRequest(id)) },
     fetchEventsByOwner: (ownerid) => { dispatch(actionFetchEventsByOwnerRequest(ownerid)) },
-    fetchAccountBySite: (ownerID) => { dispatch(actionFetchAccountsByIDRequest(ownerID)) },
+    fetchAccountByID: (ownerID) => { dispatch(actionFetchAccountsByIDRequest(ownerID)) },
     actionDeleteEvents: (name) => { dispatch(actionDeleteEventsRequest(name)) },
     actionFetchEvents: () => { dispatch(actionFetchEventsRequest()) },
     actionDownloadEventsByAccount: (ownerid, ownername) => { dispatch(actionDownloadEventsByAccountRequest(ownerid, ownername)) },
+    actionEditAccount: (obj, id) => { dispatch(actionEditAccountRequest(obj, id)) },
   }
 }
 

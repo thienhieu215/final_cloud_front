@@ -110,7 +110,7 @@ class SignIn extends Component {
   componentDidMount() {
     axios({
       method: 'GET',
-      url: `http://localhost:3000/sociallogin/logout`,
+      url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/sociallogin/logout`,
       data: null
     })
         .catch(err => {
@@ -182,8 +182,24 @@ class SignIn extends Component {
             </Grid>
 
           </form>
-          <a href={"/sociallogin/auth/facebook"} onClick={this.handleFBClick.bind(this)} className="btn btn-primary"><span className="fa fa-facebook"></span>Facebook</a>
-          <a href={"/sociallogin/auth/google"} onClick={this.handleGmailClick.bind(this)} className="btn btn-primary"><span className="fa fa-facebook"></span>Gmail</a>
+          {/* <a href={"http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/sociallogin/auth/facebook"} onClick={this.handleFBClick.bind(this)} className="btn btn-primary"><span className="fa fa-facebook"></span>Facebook</a>
+          <a href={"/sociallogin/auth/google"} onClick={this.handleGmailClick.bind(this)} className="btn btn-primary"><span className="fa fa-facebook"></span>Gmail</a> */}
+
+          <br/>
+
+          <a href={"http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/sociallogin/auth/facebook"} onClick={this.handleFBClick.bind(this)} >
+          <button class="loginBtn loginBtn--facebook">
+            Login with Facebook
+          </button>
+          </a>
+          
+          <a href={"http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/sociallogin/auth/google"} onClick={this.handleGmailClick.bind(this)}>
+          <button class="loginBtn loginBtn--google">
+            Login with Google
+          </button>
+          </a>
+
+
 
         </div>
         <Box mt={8}>

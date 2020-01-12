@@ -161,7 +161,7 @@ class EditLocationPage extends Component {
             cs_xs_shirt: this.state.eventXSreq,
             cs_s_shirt: this.state.eventSreq,
             cs_m_shirt: this.state.eventMreq,
-            cs_l_shirt: this.state.cs_l_shirt,
+            cs_l_shirt: this.state.eventLreq,
             cs_xl_shirt: this.state.eventXLreq,
             cs_inex: this.state.eventInEx,
             cs_pay: this.state.eventPay
@@ -250,7 +250,7 @@ class EditLocationPage extends Component {
                 console.log(eventID)
                 axios({
                     method: 'GET',
-                    url: `http://localhost:3000/cleansite/${eventID}`,
+                    url: `http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/cleansite/${eventID}`,
                     data: null
                 }).then(res => {
                     console.log(res.data, "data")
@@ -408,30 +408,40 @@ class EditLocationPage extends Component {
                             <br/>
 
                             <div>
-                                <label>Public this event? *</label>
+                                <label>External or Internal event? *</label>
                                 <div className="form-group">
                                     <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" 
-                                                id="customRadio1" 
-                                                name="customRadio" 
-                                                class="custom-control-input"
-                                                value={this.state.public} 
-                                                // checked={this.public}  
-                                                onChange={this.public}
-                                                />
-                                        <label class="custom-control-label" for="customRadio1">Yes</label>
+                                        <input type="radio"
+                                            id="customRadio1"
+                                            name="customRadio"
+                                            class="custom-control-input"
+                                            value=''
+                                            onChange={this.public}
+                                        />
+                                        <label class="custom-control-label" for="customRadio1">External</label>
                                     </div>
                                     <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" 
-                                                id="customRadio2" 
-                                                name="customRadio" 
-                                                class="custom-control-input"
-                                                value={this.state.public} 
-                                                // checked={this.nopublic} 
-                                                onChange={this.nopublic}
-                                                />
-                                        <label class="custom-control-label" for="customRadio2">No</label>
+                                        <input type="radio"
+                                            id="customRadio2"
+                                            name="customRadio"
+                                            class="custom-control-input"
+                                            value={this.state.public}
+                                            onChange={this.nopublic}
+                                        />
+                                        <label class="custom-control-label" for="customRadio2">Internal</label>
                                     </div>
+                                    {this.state.showInternal && 
+                                        <div className="form-group">
+                                        <label>Email domain name *</label>
+                                        <input type="text" className="col"
+                                            placeholder="domain name..."
+                                            className="form-control"
+                                            onChange={this.nopublic}
+                                        />
+                                        {this.state.nameErr &&
+                                            <span className='error'>Please fill in this field!</span>}
+                                    </div>
+                                    }
                                 </div>
                             </div>
                             {this.state.publicErr &&

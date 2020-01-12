@@ -3,7 +3,7 @@ import axios from 'axios'
 /////// REGISTER NEW USER
 export const register = newUser => {
   return axios
-    .post('http://localhost:3000/users/register', {
+    .post('http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/users/register', {
       acc_email: newUser.acc_email,
       acc_username: newUser.acc_username,
       acc_pass: newUser.acc_pass,
@@ -18,7 +18,7 @@ export const register = newUser => {
 /////// LOG IN 
 export const login = user => {
   return axios
-    .post('http://localhost:3000/users/login', {
+    .post('http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/users/login', {
       acc_email: user.acc_email,
       acc_pass: user.acc_pass
     })
@@ -34,7 +34,7 @@ export const login = user => {
 ////// FB LOG IN
 export const fb_login = user => {
     return axios
-        .get('http://localhost:3000/sociallogin/auth/facebook', {
+        .get('http://cleanupvn.ap-northeast-1.elasticbeanstalk.com:3000/sociallogin/auth/facebook', {
             // acc_email: user.acc_email,
             // acc_pass: user.acc_pass
         })

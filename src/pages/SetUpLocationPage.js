@@ -34,6 +34,7 @@ class SetUpLocationPage extends Component {
             showInternal: false,
             token: '',
             tokenName: '',
+            tokenDesc: '',
             nameErr: false,
             descErr: false,
             coordErr: false,
@@ -137,7 +138,8 @@ class SetUpLocationPage extends Component {
             cs_start_time: this.state.eventStartDateTime,
             cs_end_time: this.state.eventEndDateTime,
             cs_owner: this.state.token,
-            cs_owner_name: this.state.tokenName,
+            // cs_owner_name: this.state.tokenName,
+            // cs_owner_description: this.state.tokenDesc,
             cs_inex: this.state.public
         };
         if (this.state.eventName === "") {
@@ -225,7 +227,7 @@ class SetUpLocationPage extends Component {
         if (typeof userToken !== "undefined" && userToken !== null) {
             var decoded = jwtDecode(userToken);
             const id = decoded.acc_id;
-            this.setState({ token: decoded.acc_id, tokenName: decoded.acc_username })
+            this.setState({ token: decoded.acc_id, tokenName: decoded.acc_username, tokenDesc: decoded.acc_description })
         } else {
             window.location.href = "/#/sign-in"
         }

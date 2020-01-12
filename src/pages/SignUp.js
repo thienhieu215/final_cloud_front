@@ -64,14 +64,18 @@ class SignUp extends Component {
       acc_description: this.state.acc_description,
       acc_profile_pic: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQnRM7I0HLiujP2nRnyulNuzAwFRVgWKo16YMsYUvFYKJLWA5lyA&s"
     }
-    if (this.state.acc_username === "" || this.state.acc_username === "admin") {
+    if (this.state.acc_username === "" 
+    // || this.state.acc_username === "admin"
+    ) {
       this.setState({
         emailErr: false,
         passErr: false,
         usernameErr: true
       })
 
-    } else if (this.state.acc_email === "" || this.state.acc_email.includes("admin") || validEmailRegex.test(this.state.acc_email) === false) {
+    } else if (this.state.acc_email === "" 
+    // || this.state.acc_email.includes("admin") 
+    || validEmailRegex.test(this.state.acc_email) === false) {
       this.setState({
         emailErr: true,
         passErr: false,
