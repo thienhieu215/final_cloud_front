@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "react-redux": "^7.1.1",
     "redux": "^4.0.4",
     "sass-loader": "^7.1.0"
